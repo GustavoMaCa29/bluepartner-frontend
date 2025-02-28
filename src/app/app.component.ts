@@ -20,7 +20,7 @@ import { Employee } from './shared/models/employee';
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, CommonModule, ReactiveFormsModule, FormsModule, ButtonModule, InputTextModule, ConfirmDialogModule, TableModule, DialogModule, ToastModule, CalendarModule, ToolbarModule, InputNumberModule, CalendarModule ],
+  imports: [RouterOutlet, CommonModule, ReactiveFormsModule, FormsModule, ButtonModule, InputTextModule, ConfirmDialogModule, TableModule, DialogModule, ToastModule, CalendarModule, ToolbarModule, InputNumberModule, CalendarModule, InputNumberModule ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   providers: [MessageService, ConfirmationService, EmployeeService, { provide: LOCALE_ID, useValue: 'es-PE' }]
@@ -44,7 +44,7 @@ export class AppComponent implements OnDestroy {
       lastName: ['', Validators.required],
       age: [null, [Validators.required, Validators.min(18)]],
       birthday: [null, Validators.required],
-      salary: [null, Validators.required],
+      salary: [null, [Validators.required, Validators.min(0)]],
     });
     
   }

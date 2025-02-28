@@ -120,7 +120,7 @@
           locale="es-PE"
         ></p-inputNumber>
         <small class="p-error" *ngIf="submitted && employeeForm.controls['salary'].invalid">
-          El salario es obligatorio.
+          El salario es obligatorio y no puede ser negativo.
         </small>
       </div>
 
