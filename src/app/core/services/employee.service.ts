@@ -1,23 +1,19 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
-import { Employee } from '../../shared/models/employee';
+import { catchError, Observable, throwError } from 'rxjs';
 import { environment } from '../../environments/environments';
+import { Employee } from '../../shared/models/employee';
 
 @Injectable({
   providedIn: 'root',
 })
 export class EmployeeService {
   private apiUrl = environment.apiUrl;
-  private employeesSubject = new BehaviorSubject<Employee[]>([]);
 
   constructor(private http: HttpClient) {}
 
   getAllEmployees(): Observable<Employee[]> {
-    return this.http.get<Employee[]>(`${this.apiUrl}/list`).pipe(
-      tap((employees) => this.employeesSubject.next(employees)),
-      catchError((error) => throwError(() => error))
-    );
+    return this.http.get<Employee[]>(`${this.apiUrl}/list`);
   }
 
   createEmployee(employee: Employee): Observable<Employee> {

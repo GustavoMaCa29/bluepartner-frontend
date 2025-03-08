@@ -1,0 +1,179 @@
+<div class="card">
+    <p-toast></p-toast>
+    
+    <!-- Toolbar con botón para agregar empleado -->
+    <p-toolbar styleClass="mb-4 gap-2">
+      <ng-template pTemplate="left">
+        <p-button
+          severity="success"
+          label="Nuevo Empleado"
+          icon="pi pi-plus"
+          class="mr-2"
+          (click)="openNew()"
+        />
+      </ng-template>
+    </p-toolbar>
+  
+    <div *ngIf="employees$ | async as employees">
+    <!-- Tabla de empleados -->
+    <p-table
+      #dt
+      [value]="employees"
+      [rows]="5"
+      [paginator]="true"
+      [tableStyle]="{ 'min-width': '50rem' }"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th>Nombre</th>
+          <th>Apellido</th>
+          <th>Edad</th>
+          <th>Fecha de Nacimiento</th>
+          <th>Salario</th>
+          <th>Acciones</th>
+        </tr>
+      </ng-template>
+      
+      <ng-template pTemplate="body" let-employee>
+        <tr>
+          <td>{{ employee.firstName }}</td>
+          <td>{{ employee.lastName }}</td>
+          <td>{{ employee.age }}</td>
+          <td>{{ employee.birthday | date:'dd/MM/yyyy' }}</td>
+          <td>{{ employee.salary | currency:'PEN' }}</td>
+          <td>
+            <p-button
+              icon="pi pi-pencil"
+              class="mr-2"
+              [rounded]="true"
+              [outlined]="true"
+              severity="success"
+              (click)="editEmployee(employee)"
+            />
+            <p-button
+              icon="pi pi-trash"
+              severity="danger"
+              [rounded]="true"
+              [outlined]="true"
+              (click)="deleteEmployee(employee)"
+            />
+          </td>
+        </tr>
+      </ng-template>
+  
+      <!-- Resumen total de empleados -->
+      <ng-template pTemplate="summary">
+        <div class="flex align-items-center justify-content-between">
+          En total hay {{ (employees$ | async)?.length || 0 }} empleados.
+        </div>
+      </ng-template>
+    </p-table>
+    </div>
+  </div>
+  
+  <!-- Diálogo para crear/editar empleado -->
+  <p-dialog
+    [(visible)]="displayDialog"
+    [style]="{ width: '450px' }"
+    [header]="isEditing ? 'Detalles del Empleado' : 'Crear Nuevo Empleado'"
+    [modal]="true"
+    styleClass="p-fluid"
+  >
+    <ng-template pTemplate="content">
+      <form [formGroup]="employeeForm">
+        <div class="field">
+          <label for="firstName">Nombre</label>
+          <input
+            type="text"
+            pInputText
+            id="firstName"
+            formControlName="firstName"
+            autofocus
+          />
+          <small class="p-error" *ngIf="submitted && employeeForm.controls['firstName'].invalid">
+            El nombre es requerido.
+          </small>
+        </div>
+  
+        <div class="field">
+          <label for="lastName">Apellidos</label>
+          <input
+            type="text"
+            pInputText
+            id="lastName"
+            formControlName="lastName"
+          />
+          <small class="p-error" *ngIf="submitted && employeeForm.controls['lastName'].invalid">
+            Los apellidos son requeridos.
+          </small>
+        </div>
+  
+        <div class="field">
+          <label for="age">Edad</label>
+          <p-inputNumber id="age" formControlName="age"></p-inputNumber>
+          <small class="p-error" *ngIf="submitted && employeeForm.controls['age'].invalid">
+            La edad debe ser mayor a 18 años.
+          </small>
+        </div>
+  
+        <div class="field">
+          <label for="salary">Salario</label>
+          <p-inputNumber
+            id="salary"
+            formControlName="salary"
+            mode="currency"
+            currency="PEN"
+            locale="es-PE"
+          ></p-inputNumber>
+          <small class="p-error" *ngIf="submitted && employeeForm.controls['salary'].invalid">
+            El salario es obligatorio y no puede ser negativo.
+          </small>
+        </div>
+  
+        <div class="field">
+          <label for="birthday">Fecha de nacimiento</label>
+          <p-calendar 
+            id="birthday"
+            formControlName="birthday"
+            dateFormat="dd/mm/yy"
+            appendTo="body"
+          ></p-calendar>
+          <small class="p-error" *ngIf="submitted && employeeForm.controls['birthday'].invalid">
+            La fecha de nacimiento es obligatoria.
+          </small>
+        </div>
+      </form>
+    </ng-template>
+  
+    <ng-template pTemplate="footer">
+      <p-button
+        label="Cancelar"
+        icon="pi pi-times"
+        [text]="true"
+        (onClick)="hideDialog()"
+      />
+      <p-button
+        label="Guardar"
+        icon="pi pi-check"
+        (onClick)="saveEmployee()"
+      />
+    </ng-template>
+  </p-dialog>
+  
+  <!-- Confirmación para eliminar empleado -->
+  <p-confirmDialog #cd>
+    <ng-template pTemplate="headless" let-message>
+      <div class="flex flex-column align-items-center p-5 surface-overlay border-round">
+        <span class="font-bold text-2xl block mb-2">
+          {{ message.header }}
+        </span>
+        <p class="mb-3">{{ message.message }}</p>
+        <div class="flex align-items-center gap-2 mt-4">
+          <button pButton label="Cancelar" (click)="cd.reject()" class="p-button-outlined w-8rem" severity="danger">
+          </button>
+          <button pButton label="Eliminar" (click)="cd.accept()" class="w-8rem" severity="danger">
+          </button>
+        </div>
+      </div>
+    </ng-template>
+  </p-confirmDialog>
